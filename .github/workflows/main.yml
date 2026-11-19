@@ -127,6 +127,7 @@ jobs:
 
      
       
+
       - name: Notify Google Chat
         if: always()
         env:
@@ -148,11 +149,9 @@ jobs:
           if [ "$STATUS" = "success" ]; then
             RESULT="SUCCÈS"
             TITLE="Pipeline CI/CD terminée avec succès"
-            SUMMARY="Toutes les étapes exécutées sont validées."
           else
             RESULT="ÉCHEC"
             TITLE="Échec de la pipeline CI/CD"
-            SUMMARY="Une ou plusieurs étapes ont échoué."
           fi
 
           # Fonction de présentation des résultats
@@ -204,14 +203,12 @@ jobs:
 
           STATUT GLOBAL : $RESULT
 
-          $SUMMARY
-
           RAISON DE L'ÉCHEC
           $REASON
 
           DÉTAILS DE L'EXÉCUTION
           Consulter les logs GitHub Actions :
-          $RUN_URL
+          $RUN_URL"
 
           # Vérifier la présence du webhook
           if [ -z "$WEBHOOK" ]; then
