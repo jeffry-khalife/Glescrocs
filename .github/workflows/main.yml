@@ -186,7 +186,7 @@ jobs:
           done
 
           # Préparer le message
-          MESSAGE="$TITLE
+          MESSAGE="$TITLE"
 
           INFORMATIONS DU COMMIT
           Auteur       : $AUTHOR
