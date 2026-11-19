@@ -23,7 +23,7 @@ jest.mock("jsonwebtoken", () => ({
 }));
 
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
+// const jwt = require("jsonwebtoken");
 const userModel = require("../../models/userModel");
 const orderModel = require("../../models/orderModel");
 const authController = require("../../controllers/authController");
