@@ -130,7 +130,7 @@ jobs:
       - name: Notify Google Chat
         if: always()
         env:
-          WEBHOOK: ${{ secrets.GOOGLE_CHAT_WEBHOOK }}
+          WEBHOOK: ${{ secrets.CHAT_WEBHOOK }}
           STATUS: ${{ job.status }}
           AUTHOR: ${{ github.actor }}
           COMMIT: ${{ github.sha }}
