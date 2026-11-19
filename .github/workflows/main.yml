@@ -186,10 +186,7 @@ jobs:
           done
 
           # Préparer le message
-          MESSAGE="$ICON $TITLE
-
-          PROJET : CANTINE
-          ==================================
+          MESSAGE="$TITLE
 
           INFORMATIONS DU COMMIT
           Auteur       : $AUTHOR
@@ -197,7 +194,6 @@ jobs:
           Branche/Tag  : $BRANCH
           Événement    : $EVENT
 
-          ==================================
           RÉSULTATS DES VÉRIFICATIONS
 
           Lint Backend       : $(format_status "$BACKEND_LINT")
@@ -206,7 +202,6 @@ jobs:
           Tests Frontend     : $(format_status "$FRONTEND_TESTS")
           Build Frontend     : $(format_status "$FRONTEND_BUILD")
 
-          ==================================
           STATUT GLOBAL : $RESULT
 
           $SUMMARY
@@ -214,14 +209,9 @@ jobs:
           RAISON DE L'ÉCHEC
           $REASON
 
-          ==================================
           DÉTAILS DE L'EXÉCUTION
           Consulter les logs GitHub Actions :
           $RUN_URL
-
-          ==================================
-          Notification automatique GitHub Actions
-          Projet Cantine - CI/CD"
 
           # Vérifier la présence du webhook
           if [ -z "$WEBHOOK" ]; then
