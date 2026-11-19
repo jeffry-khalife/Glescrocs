@@ -1,0 +1,147 @@
+.queue-section {
+  padding: 60px 20px;
+  background-color: var(--white);
+  border-top: 1px solid var(--border-gray);
+}
+
+.queue-container {
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.queue-title {
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--primary-dark);
+  margin-bottom: 40px;
+  text-align: center;
+}
+
+.queue-position-display {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.position-big,
+.clients-ahead {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+}
+
+.position-label,
+.clients-ahead-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-gray);
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.position-number-big,
+.clients-ahead-number {
+  font-size: 72px;
+  font-weight: 800;
+  color: var(--primary-orange);
+  margin: 0;
+  line-height: 1;
+}
+
+.queue-info {
+  text-align: center;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-gray);
+}
+
+.queue-info-text {
+  font-size: 14px;
+  color: var(--text-gray);
+  margin: 0;
+}
+
+.queue-empty {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.queue-empty p {
+  font-size: 16px;
+  color: var(--text-gray);
+  margin: 0;
+}
+
+@media (max-width: 1024px) {
+  .queue-section {
+    padding: 40px 20px;
+  }
+
+  .queue-title {
+    font-size: 24px;
+    margin-bottom: 30px;
+  }
+
+  .position-number-big,
+  .clients-ahead-number {
+    font-size: 56px;
+  }
+
+  .queue-position-display {
+    gap: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .queue-section {
+    padding: 30px 15px;
+  }
+
+  .queue-title {
+    font-size: 20px;
+    margin-bottom: 25px;
+  }
+
+  .position-number-big,
+  .clients-ahead-number {
+    font-size: 48px;
+  }
+
+  .queue-position-display {
+    gap: 20px;
+  }
+
+  .position-label,
+  .clients-ahead-label {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .queue-section {
+    padding: 20px 10px;
+  }
+
+  .queue-title {
+    font-size: 18px;
+    margin-bottom: 20px;
+  }
+
+  .position-number-big,
+  .clients-ahead-number {
+    font-size: 40px;
+  }
+
+  .queue-position-display {
+    flex-direction: column;
+    gap: 25px;
+  }
+
+  .position-label,
+  .clients-ahead-label {
+    font-size: 12px;
+  }
+}
