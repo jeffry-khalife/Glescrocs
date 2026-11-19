@@ -1,17 +1,23 @@
-name: CI
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
       - main
       - dev
+    tags:
+      - 'v*'
 
   pull_request:
     branches:
       - main
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
-  build:
+  build-and-deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -35,6 +41,200 @@ jobs:
         working-directory: ./frontend
         run: npm ci
 
+      - name: Lint backend
+        id: backend_lint
+        working-directory: ./backend
+        run: npm run lint
+
+      - name: Lint frontend
+        id: frontend_lint
+        working-directory: ./frontend
+        run: npm run lint
+
+      - name: Run backend unit tests
+        id: backend_tests
+        working-directory: ./backend
+        run: npm run test:unit
+
+      - name: Run frontend unit tests
+        id: frontend_tests
+        working-directory: ./frontend
+        run: npm run test:unit
+
       - name: Build frontend
+        id: frontend_build
         working-directory: ./frontend
         run: npm run build
+
+      - name: Prepare image names
+        id: image_names
+        run: |
+          REPO=$(echo "jeffry-khalife/Glescrocs" | tr '[:upper:]' '[:lower:]')
+          echo "backend=ghcr.io/${REPO}-backend" >> $GITHUB_OUTPUT
+          echo "frontend=ghcr.io/${REPO}-frontend" >> $GITHUB_OUTPUT
+
+      - name: Set up Docker Buildx
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Docker metadata backend
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+        id: meta_backend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.image_names.outputs.backend }}
+          tags: |
+            type=raw,value=dev,enable=${{ github.ref == 'refs/heads/main' }}
+            type=ref,event=tag
+
+      - name: Build and push backend
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+        uses: docker/build-push-action@v6
+        with:
+          context: ./backend
+          file: ./backend/Dockerfile
+          push: true
+          tags: ${{ steps.meta_backend.outputs.tags }}
+          labels: ${{ steps.meta_backend.outputs.labels }}
+
+      - name: Docker metadata frontend
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+        id: meta_frontend
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ steps.image_names.outputs.frontend }}
+          tags: |
+            type=raw,value=dev,enable=${{ github.ref == 'refs/heads/main' }}
+            type=ref,event=tag
+
+      - name: Build and push frontend
+        if: github.event_name != 'pull_request' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
+        uses: docker/build-push-action@v6
+        with:
+          context: ./frontend
+          file: ./frontend/Dockerfile
+          push: true
+          tags: ${{ steps.meta_frontend.outputs.tags }}
+          labels: ${{ steps.meta_frontend.outputs.labels }}
+
+     
+      
+      - name: Notify Google Chat
+        if: always()
+        env:
+          WEBHOOK: ${{ secrets.GOOGLE_CHAT_WEBHOOK }}
+          STATUS: ${{ job.status }}
+          AUTHOR: ${{ github.actor }}
+          COMMIT: ${{ github.sha }}
+          BRANCH: ${{ github.ref_name }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          BACKEND_LINT: ${{ steps.backend_lint.outcome }}
+          FRONTEND_LINT: ${{ steps.frontend_lint.outcome }}
+          BACKEND_TESTS: ${{ steps.backend_tests.outcome }}
+          FRONTEND_TESTS: ${{ steps.frontend_tests.outcome }}
+          FRONTEND_BUILD: ${{ steps.frontend_build.outcome }}
+          EVENT: ${{ github.event_name }}
+
+        run: |
+          # Définir le statut général
+          if [ "$STATUS" = "success" ]; then
+            RESULT="SUCCÈS"
+            TITLE="Pipeline CI/CD terminée avec succès"
+            SUMMARY="Toutes les étapes exécutées sont validées."
+          else
+            RESULT="ÉCHEC"
+            TITLE="Échec de la pipeline CI/CD"
+            SUMMARY="Une ou plusieurs étapes ont échoué."
+          fi
+
+          # Fonction de présentation des résultats
+          format_status() {
+            case "$1" in
+              success) echo "SUCCESS" ;;
+              failure) echo "FAILURE" ;;
+              cancelled) echo "CANCELLED" ;;
+              skipped) echo "SKIPPED" ;;
+              *) echo "NON EXÉCUTÉ" ;;
+            esac
+          }
+
+          # Identifier la première étape échouée
+          REASON="Aucune erreur détectée."
+
+          for STEP in \
+            "Lint Backend:$BACKEND_LINT" \
+            "Lint Frontend:$FRONTEND_LINT" \
+            "Tests Backend:$BACKEND_TESTS" \
+            "Tests Frontend:$FRONTEND_TESTS" \
+            "Build Frontend:$FRONTEND_BUILD"
+          do
+            STEP_NAME="${STEP%%:*}"
+            STEP_STATUS="${STEP#*:}"
+
+            if [ "$STEP_STATUS" = "failure" ]; then
+              REASON="Échec de l'étape : $STEP_NAME"
+              break
+            fi
+          done
+
+          # Préparer le message
+          MESSAGE="$ICON $TITLE
+
+          PROJET : CANTINE
+          ==================================
+
+          INFORMATIONS DU COMMIT
+          Auteur       : $AUTHOR
+          Commit       : ${COMMIT:0:7}
+          Branche/Tag  : $BRANCH
+          Événement    : $EVENT
+
+          ==================================
+          RÉSULTATS DES VÉRIFICATIONS
+
+          Lint Backend       : $(format_status "$BACKEND_LINT")
+          Lint Frontend      : $(format_status "$FRONTEND_LINT")
+          Tests Backend      : $(format_status "$BACKEND_TESTS")
+          Tests Frontend     : $(format_status "$FRONTEND_TESTS")
+          Build Frontend     : $(format_status "$FRONTEND_BUILD")
+
+          ==================================
+          STATUT GLOBAL : $RESULT
+
+          $SUMMARY
+
+          RAISON DE L'ÉCHEC
+          $REASON
+
+          ==================================
+          DÉTAILS DE L'EXÉCUTION
+          Consulter les logs GitHub Actions :
+          $RUN_URL
+
+          ==================================
+          Notification automatique GitHub Actions
+          Projet Cantine - CI/CD"
+
+          # Vérifier la présence du webhook
+          if [ -z "$WEBHOOK" ]; then
+            echo "::warning::Google Chat webhook missing"
+            exit 0
+          fi
+
+          # Construire et envoyer la notification
+          jq -n --arg text "$MESSAGE" '{text: $text}' > payload.json
+
+          curl --fail-with-body --retry 3 \
+            -X POST \
+            -H "Content-Type: application/json" \
+            -d @payload.json \
+            "$WEBHOOK"
+
