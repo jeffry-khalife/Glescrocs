@@ -17,9 +17,9 @@ export default function UsersManagement() {
     try {
       const data = await getUsers();
       setUsers(data);
-    } catch (err) {
-      setError("Erreur lors du chargement des utilisateurs");
-    }
+    } catch {
+  setError("Erreur lors du chargement des utilisateurs");
+  }
   };
 
   useEffect(() => {
@@ -53,9 +53,9 @@ export default function UsersManagement() {
       setFormData({ username: "", password: "", role: "employee" });
       setShowForm(false);
       await fetchUsers();
-    } catch (err) {
-      setError("Erreur lors de la création de l'utilisateur");
-    } finally {
+    } catch {
+      setError("Erreur lors de la création de l&apos;utilisateur");
+    }finally {
       setLoading(false);
     }
   };

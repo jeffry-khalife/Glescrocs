@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+
+import { useEffect, useState } from "react";
 import { getQueue } from "../api/api";
 import socket from "../socket";
 import Notification from "./Notification";
@@ -7,8 +8,13 @@ import "../styles/Queue.css";
 export default function Queue() {
   const [queue, setQueue] = useState([]);
   const [notification, setNotification] = useState(null);
+
   const myOrderId = localStorage.getItem("myOrderId");
-  const myOrderPosition = queue.findIndex((order) => order.id == myOrderId);
+
+  const myOrderPosition = queue.findIndex(
+    (order) => order.id == myOrderId
+  );
+
   const clientsAhead = myOrderPosition > 0 ? myOrderPosition : 0;
 
   // Charger la file d'attente depuis l'API
@@ -21,20 +27,17 @@ export default function Queue() {
     }
   };
 
-  // Effet pour charger la queue au montage et mettre en place les listeners Socket.io
   useEffect(() => {
     loadQueue();
 
-    // Écouteur direct pour les mises à jour des commandes
     const handleOrderUpdated = (data) => {
-      // Vérifier si c'est la commande de cet utilisateur et qu'elle est "ready"
       if (data.id == myOrderId && data.status === "ready") {
         setNotification({
           message: "🎉 Votre commande est prête! Venez la récupérer!",
           type: "success",
         });
       }
-      // Recharger la queue de toute façon
+
       loadQueue();
     };
 
@@ -64,17 +67,24 @@ export default function Queue() {
 
       <section className="queue-section">
         <div className="queue-container">
-          <h2 className="queue-title">File d'attente</h2>
+          <h2 className="queue-title">File d&apos;attente</h2>
 
           {myOrderPosition >= 0 ? (
             <div className="queue-position-display">
               <div className="position-big">
                 <p className="position-label">Position</p>
-                <p className="position-number-big">{myOrderPosition + 1}</p>
+                <p className="position-number-big">
+                  {myOrderPosition + 1}
+                </p>
               </div>
+
               <div className="clients-ahead">
-                <p className="clients-ahead-label">Nombre de clients avant vous</p>
-                <p className="clients-ahead-number">{clientsAhead}</p>
+                <p className="clients-ahead-label">
+                  Nombre de clients avant vous
+                </p>
+                <p className="clients-ahead-number">
+                  {clientsAhead}
+                </p>
               </div>
             </div>
           ) : (
@@ -82,12 +92,6 @@ export default function Queue() {
               <p>Aucune commande trouvée</p>
             </div>
           )}
-
-          {/* {queue.length > 0 && (
-            <div className="queue-info">
-              <p className="queue-info-text">Total in queue: {queue.length}</p>
-            </div>
-          )} */}
         </div>
       </section>
     </>

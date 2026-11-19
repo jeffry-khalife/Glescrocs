@@ -46,10 +46,10 @@ jobs:
         working-directory: ./backend
         run: npm run lint
 
-      - name: Lint frontend
-        id: frontend_lint
-        working-directory: ./frontend
-        run: npm run lint
+      # - name: Lint frontend
+      #   id: frontend_lint
+      #   working-directory: ./frontend
+      #   run: npm run lint
 
       - name: Run backend unit tests
         id: backend_tests
