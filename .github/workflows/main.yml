@@ -126,8 +126,7 @@ jobs:
           labels: ${{ steps.meta_frontend.outputs.labels }}
 
      
-      
-
+    
       - name: Notify Google Chat
         if: always()
         env:
@@ -147,10 +146,10 @@ jobs:
         run: |
           # Définir le statut général
           if [ "$STATUS" = "success" ]; then
-            RESULT="SUCCÈS"
+            RESULT="SUCCESS"
             TITLE="Pipeline CI/CD terminée avec succès"
           else
-            RESULT="ÉCHEC"
+            RESULT="FAILURE"
             TITLE="Échec de la pipeline CI/CD"
           fi
 
@@ -200,11 +199,6 @@ jobs:
           Tests Backend      : $(format_status "$BACKEND_TESTS")
           Tests Frontend     : $(format_status "$FRONTEND_TESTS")
           Build Frontend     : $(format_status "$FRONTEND_BUILD")
-
-          STATUT GLOBAL : $RESULT
-
-          RAISON DE L'ÉCHEC
-          $REASON
 
           DÉTAILS DE L'EXÉCUTION
           Consulter les logs GitHub Actions :
