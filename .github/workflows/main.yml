@@ -17,7 +17,7 @@ permissions:
   packages: write
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
 
     steps:
@@ -200,7 +200,6 @@ jobs:
           Tests Frontend     : $(format_status "$FRONTEND_TESTS")
           Build Frontend     : $(format_status "$FRONTEND_BUILD")
 
-          DÉTAILS DE L'EXÉCUTION
           Consulter les logs GitHub Actions :
           $RUN_URL"
 
