@@ -156,10 +156,10 @@ jobs:
           # Fonction de présentation des résultats
           format_status() {
             case "$1" in
-              success) echo "SUCCESS" ;;
-              failure) echo "FAILURE" ;;
-              cancelled) echo "CANCELLED" ;;
-              skipped) echo "SKIPPED" ;;
+              success) echo "Succès" ;;
+              failure) echo "Échec" ;;
+              cancelled) echo "Annulé" ;;
+              skipped) echo "Ignoré" ;;
               *) echo "NON EXÉCUTÉ" ;;
             esac
           }
