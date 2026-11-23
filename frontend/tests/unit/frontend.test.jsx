@@ -39,7 +39,7 @@ describe('Fonctions et composants du frontend', () => {
     await realApi.createOrder(7);
 
     expect(global.fetch).toHaveBeenCalledWith(
-      'http://localhost:5000/api/orders',
+      '/api/orders',
       expect.objectContaining({
         method: 'POST',
         body: JSON.stringify({ menu_id: 7 }),

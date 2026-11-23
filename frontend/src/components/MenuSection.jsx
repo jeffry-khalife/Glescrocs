@@ -15,7 +15,7 @@ export default function MenuSection() {
     const fetchMenus = async () => {
       try {
         setLoading(true);
-        const response = await fetch("http://localhost:5000/api/menus");
+        const response = await fetch("/api/menus");
         
         if (!response.ok) {
           throw new Error("Erreur lors du chargement des menus");

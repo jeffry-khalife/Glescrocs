@@ -15,7 +15,7 @@ export default function AdminDashboard() {
 
   const fetchOrders = async () => {
     try {
-      const res = await fetch("http://localhost:5000/api/orders", {
+      const res = await fetch("/api/orders", {
         headers: {
           Authorization: "Bearer " + localStorage.getItem("token"),
         },
@@ -40,7 +40,7 @@ export default function AdminDashboard() {
 
   const validateOrder = async (id) => {
     try {
-      await fetch(`http://localhost:5000/api/orders/${id}/validate`, {
+      await fetch(`/api/orders/${id}/validate`, {
         method: "PUT",
         headers: {
           Authorization: "Bearer " + localStorage.getItem("token"),
@@ -54,7 +54,7 @@ export default function AdminDashboard() {
 
   const markReady = async (id) => {
     try {
-      await fetch(`http://localhost:5000/api/orders/${id}/status`, {
+      await fetch(`/api/orders/${id}/status`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",

@@ -14,7 +14,7 @@ services:
       retries: 20
 
   backend:
-    image: ghcr.io/TON_UTILISATEUR/TON_REPO-backend:${IMAGE_TAG:-dev}
+    image: ghcr.io/jeffry-khalife/glescrocs-backend:${IMAGE_TAG:-dev}
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -25,14 +25,12 @@ services:
       DB_PASSWORD: ${MYSQL_ROOT_PASSWORD:-root}
       DB_NAME: cantine
       JWT_SECRET: ${JWT_SECRET}
-    ports:
-      - "5000:5000"
     depends_on:
       mysql:
         condition: service_healthy
 
   frontend:
-    image: ghcr.io/TON_UTILISATEUR/TON_REPO-frontend:${IMAGE_TAG:-dev}
+    image: ghcr.io/jeffry-khalife/glescrocs-frontend:${IMAGE_TAG:-dev}
     build:
       context: ./frontend
       dockerfile: Dockerfile
