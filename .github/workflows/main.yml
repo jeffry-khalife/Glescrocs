@@ -169,7 +169,7 @@ jobs:
 
           for STEP in \
             "Lint Backend:$BACKEND_LINT" \
-            # "Lint Frontend:$FRONTEND_LINT" \
+            "Lint Frontend:$FRONTEND_LINT" \
             "Tests Backend:$BACKEND_TESTS" \
             "Tests Frontend:$FRONTEND_TESTS" \
             "Build Frontend:$FRONTEND_BUILD"
